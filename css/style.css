@@ -25,5 +25,7 @@
     padding: 5px;
     /*border-radius: 10px;*/
 }
-/*#product-list div div:nth-child(even) {background: red}*/
-/*#product-list div div:nth-child(odd) {background: green}
+.container {
+    padding-right: 7px;
+    padding-left: 7px;
+}

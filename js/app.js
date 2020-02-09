@@ -14,6 +14,7 @@ class Product {
 	showAllProduct(firebase) {
 		firebase.database().ref('tiendalima').child('products').on('child_added', function(snap) {
 			let product = snap.val();
+			product = {...product, key:snap.key};
 			let ui = new UI();
 			ui.showListProduct(product);
 		});
@@ -28,22 +29,37 @@ class Product {
 			product.showAllProduct(firebase);
 			return;
 		}
+		// firebase.database()
+		// 		.ref('tiendalima')
+		// 		.child('products')
+		// 		.orderByChild('nameDescription')
+		// 		.startAt(valueSearch.toLowerCase())
+		// 		.on('value', function(snap) {
+		// 	let productValue = snap.val();
+		// 	console.table(productValue);
+		// 	let ui = new UI();
+		// 	ui.showListProduct(productValue);
+		// });
 
 		firebase.database()
 				.ref('tiendalima')
 				.child('products')
 				.orderByChild('nameDescription')
-				.startAt(valueSearch.toLowerCase())
-				.once('child_added', function(snap) {
+				.on('value', function(snap) {
 			let productValue = snap.val();
+			productValue = Object.entries(productValue);
+			productValue = productValue.map(e => e[1]);
+			productValue = productValue.filter(e => e.nameDescription.search(valueSearch.toLowerCase()) > -1);
 			let ui = new UI();
-			ui.showListProduct(productValue);
+			productValue.forEach(function(e) {
+				ui.showListProduct(e);
+			});
 		});
 	}
 }
 
 class UI {
-	showListProduct( {name, price, description, file} ) {
+	showListProduct( {name, price, description, file, key} ) {
 		const productList = document.getElementById('product-list');
 		let productContainer = document.createElement('div');
 		// productContainer.style.marginTop = '10px';
@@ -57,6 +73,9 @@ class UI {
 			</div>
 			<div class="text-center">
 				<img src="${file}" class="img-fluid">
+			</div>
+			<div class="text-center mt-2 mb-2">
+				<button id="button-edit" class="btn btn-danger" onClick="editProduct('${key}')">Editar ${key}</button>
 			</div>`;
 		productContainer.innerHTML = product;
 		productList.appendChild(productContainer);
@@ -77,6 +96,19 @@ class UI {
 		}
 		reader.readAsDataURL(file);
 	}
+
+	showMessage(message, cssClass) {
+		const app = document.getElementById('App');
+		const div = document.createElement('div');
+		const container = document.querySelector('.container');
+		div.className = 'alert mt-3 alert-' + cssClass;
+		div.appendChild(document.createTextNode(message));
+		container.insertBefore(div, app);
+
+		setTimeout(function() {
+			document.querySelector('.alert').remove();
+		}, 3000);
+	}
 }
 
 init();
@@ -88,7 +120,6 @@ const searchButton = document.getElementById('search-button');
 const file = document.getElementById('file');
 const buttonRegister = document.getElementById('button-register');
 const buttonBacksearch = document.getElementById('button-backsearch');
-
 
 saveButton.addEventListener('click', function(e) {
 	e.preventDefault();
@@ -157,4 +188,8 @@ function init() {
 
 	product.showAllProduct(firebase);
 	defaultBase64(base64);
+}
+
+function editProduct(key) {
+	console.log(key);
 }
