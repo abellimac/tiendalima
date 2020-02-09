@@ -136,7 +136,9 @@ saveButton.addEventListener('click', function(e) {
 	let base64 = document.getElementById('base64').value;
 
 	if (name == '' || price == '') {
-		alert('El nombre y el precio deben ser ingresados');
+		let ui = new UI();
+		ui.showMessage('El nombre y el precio deben ser ingresados', 'danger');
+		return;
 	}
 
 	let product = new Product(name, price, description, base64, name.toLowerCase());
