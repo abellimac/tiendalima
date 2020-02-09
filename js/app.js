@@ -52,11 +52,11 @@ class UI {
 		let product = `
 			<div class="fz-22">
 				<strong>Nombre</strong>: ${name} <br/>
-				<strong>Precio</strong>: ${price} <br/>
-				<strong>Descripción</strong>: <div>${description}</div>
+				<strong>Precio</strong>: ${price} bs<br/>
+				<strong>Descripción</strong>: <div class="ws-prewrap">${description}</div>
 			</div>
 			<div class="text-center">
-				<img src="${file}" class="img-fluid br-5" alt="Responsive image">
+				<img src="${file}" class="img-fluid">
 			</div>`;
 		productContainer.innerHTML = product;
 		productList.appendChild(productContainer);
