@@ -1,10 +1,24 @@
 .ht-50 {
 	height: 50px;
 }
-
+.fz-22 {
+	font-size: 22px
+}
+.fz-20 {
+	font-size: 20px
+}
+.fz-18 {
+	font-size: 18px
+}
+.fz-16 {
+	font-size: 16px
+}
+.br-5 {
+	border-radius: 5px;
+}
 .product-item {
     margin-top: 10px;
-    background: #e6e6e6;
+    background: #f7fcff;
     padding: 5px;
     border-radius: 10px;
 }

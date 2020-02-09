@@ -50,13 +50,13 @@ class UI {
 		productContainer.classList.add('product-item');
 
 		let product = `
-			<div>
+			<div class="fz-22">
 				<strong>Nombre</strong>: ${name} <br/>
 				<strong>Precio</strong>: ${price} <br/>
-				<strong>Descripción</strong>: ${description} <br/>
+				<strong>Descripción</strong>: <div>${description}</div>
 			</div>
-			<div>
-				<img src="${file}" class="img-fluid" alt="Responsive image">
+			<div class="text-center">
+				<img src="${file}" class="img-fluid br-5" alt="Responsive image">
 			</div>`;
 		productContainer.innerHTML = product;
 		productList.appendChild(productContainer);

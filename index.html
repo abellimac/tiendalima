@@ -13,51 +13,82 @@
 <body>
 	<div class="container">
 		<div id="search-container">
-			<h2 class="text-center mt-4 mb-4">Buscar Productos</h2>
+			<h2 class="text-center mt-2 mb-2">Buscar Productos</h2>
 			<div>
-				<button class="btn btn-primary btn-block mb-4 ht-50">Nuevo Producto</button>
+				<button id="button-register" class="btn btn-primary btn-block mb-4 ht-50 fz-20">Nuevo Producto</button>
 			</div>
 			<div class="input-group mb-3">
 				<input type="text"
-					   class="form-control"
+					   id="search-text" 
+					   class="form-control fz-16"
 					   placeholder="Escriba datos del producto"
 					   aria-label="Escriba datos del producto">
 				<div class="input-group-append">
-					<button class="btn btn-outline-secondary" type="button" id="search-button">Buscar</button>
+					<button class="btn btn-outline-secondary fz-16" type="button" id="search-button">Buscar</button>
 				</div>
 			</div>
+			<div id="product-list" class="mb-5"></div>
 		</div>
 		<div id="register-container">
-			<h2 class="text-center">Registrar Producto</h2>
-
-
+			<h2 class="text-center mt-2 mb-2">Registrar Producto</h2>
+			<div>
+				<button id="button-backsearch" class="btn btn-primary btn-block mb-4 ht-50 fz-20">Buscar Producto</button>
+			</div>
 			<form>
 				<div class="form-group">
-					<label for="name">Nombre:</label>
-					<input type="text" class="form-control" id="name" placeholder="Escriba el nombre del producto">
+					<label for="name" class="fz-16">Nombre:</label>
+					<input type="text" class="form-control fz-16" id="name" placeholder="Escriba el nombre del producto">
 				</div>
 				<div class="form-group">
-					<label for="price">Nombre:</label>
-					<input type="number" step="0.01" class="form-control" id="price" placeholder="Escriba el precio del producto">
+					<label for="price" class="fz-16">Precio:</label>
+					<input type="number" step="0.01" class="form-control fz-16" id="price" placeholder="Escriba el precio del producto">
 				</div>
 				<div class="form-group">
-					<label for="description">Descripción:</label>
-					<textarea class="form-control" id="description" rows="3"></textarea>
+					<label for="description" class="fz-16">Descripción:</label>
+					<textarea class="form-control fz-16" id="description" rows="3"></textarea>
 				</div>
 				<div class="input-group mb-4">
 					<div class="custom-file">
-						<input type="file" class="custom-file-input" id="file">
-						<label class="custom-file-label" for="file">Elegir archivo</label>
+						<input type="file" class="custom-file-input fz-16" id="file">
+						<label class="custom-file-label fz-16" for="file">Elegir archivo</label>
 					</div>
 				</div>
+				<div class="form-group d-none">
+					<textarea class="form-control" id="base64" rows="3"></textarea>
+				</div>
 
-				<button type="submit" class="btn btn-success btn-block mb-4 ht-50">Guardar</button>
+				<button id="button-save" type="submit" class="btn btn-success btn-block mb-4 ht-50 fz-20">Guardar</button>
 			</form>
 
 
 		</div>
 	</div>
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/7.8.1/firebase-app.js"></script>
 
-	<!-- <script src="js/app.js"></script> -->
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+<script src="https://www.gstatic.com/firebasejs/7.8.1/firebase-analytics.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/7.8.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.8.1/firebase-database.js"></script>
+
+<script>
+	// Your web app's Firebase configuration
+	var firebaseConfig = {
+		apiKey: "AIzaSyCMA6lkUr6cNLlqgz3B_kXp1bAkzDCeKaY",
+		authDomain: "tiendalima-29607.firebaseapp.com",
+		databaseURL: "https://tiendalima-29607.firebaseio.com",
+		projectId: "tiendalima-29607",
+		storageBucket: "tiendalima-29607.appspot.com",
+		messagingSenderId: "671396095214",
+		appId: "1:671396095214:web:06104c13d59ebb69ce3fff",
+		measurementId: "G-8BWS8ZM4RZ"
+	};
+	// Initialize Firebase
+	firebase.initializeApp(firebaseConfig);
+	firebase.analytics();
+</script>
+<script src="js/app.js"></script>
 </body>
 </html>
