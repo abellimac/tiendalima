@@ -8,7 +8,11 @@ class Product {
 	}
 
 	saveProduct(firebase, product ) {
-		firebase.database().ref('tiendalima').child('products').push(product);
+		let key = firebase.database().ref('tiendalima').child('products').push(product);
+		if (key != undefined) {
+			let ui = new UI();
+			ui.showMessage('El producto fue guardado con éxito', 'success');
+		}
 	}
 
 	showAllProduct(firebase) {
@@ -98,12 +102,13 @@ class UI {
 	}
 
 	showMessage(message, cssClass) {
-		const app = document.getElementById('App');
+		const messageContainer = document.getElementById('message-container');
 		const div = document.createElement('div');
-		const container = document.querySelector('.container');
+		// const container = document.querySelector('.container');
 		div.className = 'alert mt-3 alert-' + cssClass;
 		div.appendChild(document.createTextNode(message));
-		container.insertBefore(div, app);
+		messageContainer.appendChild(div);
+		// container.insertBefore(div, app);
 
 		setTimeout(function() {
 			document.querySelector('.alert').remove();
