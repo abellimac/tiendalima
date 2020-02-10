@@ -8,8 +8,8 @@ class Product {
 		this.negativeTime = negativeTime * -1;
 	}
 
-	saveProduct(firebase, product ) {
-		let key = firebase.database().ref('tiendalima').child('products').push(product);
+	saveProduct(firebase, product, nameReference) {
+		let key = firebase.database().ref(nameReference).child('products').push(product);
 		if (key != undefined) {
 			let ui = new UI();
 			ui.showMessage('El producto fue guardado con éxito', 'success');
@@ -17,8 +17,9 @@ class Product {
 		}
 	}
 
-	showAllProduct(firebase) {
-		firebase.database().ref('tiendalima').child('products').limitToLast(5).on('child_added', function(snap) {
+	showAllProduct(firebase, nameReference) {
+		firebase.database().ref(nameReference).child('products').limitToLast(2).on('child_added', function(snap) {
+		// firebase.database().ref('tiendalima').child('products').on('child_added', function(snap) {
 			let product = snap.val();
 			product = {...product, key:snap.key};
 			let ui = new UI();
@@ -26,13 +27,13 @@ class Product {
 		});
 	}
 
-	searchProduct(firebase, valueSearch) {
+	searchProduct(firebase, valueSearch, nameReference) {
 		let ui = new UI();
 		ui.clearListProduct();
 		let product = new Product();
 
 		if (valueSearch == '') {
-			product.showAllProduct(firebase);
+			product.showAllProduct(firebase, nameReference);
 			return;
 		}
 		// firebase.database()
@@ -47,20 +48,64 @@ class Product {
 		// 	ui.showListProduct(productValue);
 		// });
 
-		firebase.database()
-				.ref('tiendalima')
-				.child('products')
-				.orderByChild('nameDescription')
-				.on('value', function(snap) {
-			let productValue = snap.val();
-			productValue = Object.entries(productValue);
-			productValue = productValue.map(e => e[1]);
-			productValue = productValue.filter(e => e.nameDescription.search(valueSearch.toLowerCase()) > -1);
+		// firebase.database()
+		// 		.ref('tiendalima')
+		// 		.child('products')
+		// 		.orderByChild('nameDescription')
+		// 		.on('value', function(snap) {
+		// 	let productValue = snap.val();
+		// 	productValue = Object.entries(productValue);
+		// 	productValue = productValue.map(e => e[1]);
+		// 	productValue = productValue.filter(e => e.nameDescription.search(valueSearch.toLowerCase()) > -1);
+		// 	let ui = new UI();
+		// 	productValue.forEach(function(e) {
+		// 		ui.showListProduct(e);
+		// 		console.log(e);
+		// 	});
+		// }); .endAt("ab\uf8ff");
+
+		let refProducts = firebase.database().ref(nameReference).child('products/');
+		refProducts.orderByChild('nameDescription')
+				   .startAt(valueSearch.toLowerCase())
+				   .endAt(valueSearch.toLowerCase()+"\uf8ff")
+				   .limitToFirst(5)
+				   .on('child_added', function(snap) {
 			let ui = new UI();
-			productValue.forEach(function(e) {
-				ui.showListProduct(e);
-			});
+			ui.showListProduct(snap.val());
 		});
+
+// firebase
+// .database()
+// .ref('tiendalima')
+// .child('products')
+// .orderByChild('nameDescription')
+// .startAt(valueSearch.toLowerCase())
+// .limitToLast(2)
+// .on('child_added', function(snap) {
+// 	// 
+// 	console.table(snap.val());
+// });
+
+
+// .then(snap => console.log(snap.val()));
+
+		// firebase.database()
+		// 		.ref('tiendalima')
+		// 		.child('products')
+		// 		.orderByChild('nameDescription')
+		// 		.on('child_added', function(snap) {
+		// 	let productValue = snap.val();
+		// 	console.log(productValue);
+			// productValue = Object.entries(productValue);
+			// productValue = productValue.map(e => e[1]);
+			// productValue = productValue.filter(e => e.nameDescription.search(valueSearch.toLowerCase()) > -1);
+			// let ui = new UI();
+			// productValue.forEach(function(e) {
+			// 	ui.showListProduct(e);
+			// 	console.log(e);
+			// });
+		// });
+
 	}
 }
 
@@ -81,7 +126,7 @@ class UI {
 				<img src="${file}" class="img-fluid">
 			</div>
 			<div class="text-center mt-2 mb-2">
-				<button id="button-edit" class="btn btn-danger" onClick="editProduct('${key}')">Editar ${key}</button>
+				<button id="button-edit" class="btn btn-danger d-none" onClick="editProduct('${key}')">Editar ${key}</button>
 			</div>`;
 		productContainer.innerHTML = product;
 		productList.appendChild(productContainer);
@@ -125,8 +170,6 @@ class UI {
 	}
 }
 
-init();
-
 // Dom Events
 const saveButton = document.getElementById('button-save');
 const searchText = document.getElementById('search-text');
@@ -134,6 +177,11 @@ const searchButton = document.getElementById('search-button');
 const file = document.getElementById('file');
 const buttonRegister = document.getElementById('button-register');
 const buttonBacksearch = document.getElementById('button-backsearch');
+
+let debbugging = false;
+const nameReference = (debbugging) ? "tiendalima" : "tiendalimalive";
+
+init();
 
 saveButton.addEventListener('click', function(e) {
 	e.preventDefault();
@@ -151,7 +199,7 @@ saveButton.addEventListener('click', function(e) {
 	}
 
 	let product = new Product(name, price, description, base64, name.toLowerCase(), new Date().getTime());
-	product.saveProduct(firebase, product);
+	product.saveProduct(firebase, product, nameReference);
 });
 
 searchText.addEventListener('keyup', function(e) {
@@ -161,7 +209,7 @@ searchText.addEventListener('keyup', function(e) {
 
 searchButton.addEventListener('click', function(e) {
 	let product = new Product();
-	product.searchProduct(firebase, searchText.value);
+	product.searchProduct(firebase, searchText.value, nameReference);
 });
 
 file.addEventListener('change', function(e) {
@@ -202,7 +250,7 @@ function init() {
 
 	registerContainer.style.display = 'none';
 
-	product.showAllProduct(firebase);
+	product.showAllProduct(firebase, nameReference);
 	defaultBase64(base64);
 }
 
