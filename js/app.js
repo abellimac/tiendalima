@@ -1,10 +1,11 @@
 class Product {
-	constructor(name, price, description, file, nameDescription) {
+	constructor(name, price, description, file, nameDescription, negativeTime) {
 		this.name = name;
 		this.price = price;
 		this.description = description;
 		this.file = file || '';
 		this.nameDescription = nameDescription;
+		this.negativeTime = negativeTime * -1;
 	}
 
 	saveProduct(firebase, product ) {
@@ -12,11 +13,12 @@ class Product {
 		if (key != undefined) {
 			let ui = new UI();
 			ui.showMessage('El producto fue guardado con éxito', 'success');
+			ui.clearForm();
 		}
 	}
 
 	showAllProduct(firebase) {
-		firebase.database().ref('tiendalima').child('products').on('child_added', function(snap) {
+		firebase.database().ref('tiendalima').child('products').limitToLast(5).on('child_added', function(snap) {
 			let product = snap.val();
 			product = {...product, key:snap.key};
 			let ui = new UI();
@@ -114,6 +116,13 @@ class UI {
 			document.querySelector('.alert').remove();
 		}, 3000);
 	}
+
+	clearForm() {
+		let formProduct = document.getElementById('form-product');
+		let base64 = document.getElementById('base64');
+		formProduct.reset();
+		defaultBase64(base64);
+	}
 }
 
 init();
@@ -141,13 +150,13 @@ saveButton.addEventListener('click', function(e) {
 		return;
 	}
 
-	let product = new Product(name, price, description, base64, name.toLowerCase());
+	let product = new Product(name, price, description, base64, name.toLowerCase(), new Date().getTime());
 	product.saveProduct(firebase, product);
 });
 
 searchText.addEventListener('keyup', function(e) {
-	let product = new Product();
-	product.searchProduct(firebase, this.value);
+	// let product = new Product();
+	// product.searchProduct(firebase, this.value);
 });
 
 searchButton.addEventListener('click', function(e) {
