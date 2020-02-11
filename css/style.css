@@ -19,11 +19,13 @@
 .ws-prewrap {
 	white-space: pre-wrap;
 }
+.w-200 {
+	width: 200px;
+}
 .product-item {
     margin-top: 15px;
     background: #d2ffd5;
     padding: 5px;
-    /*border-radius: 10px;*/
 }
 .container {
     padding-right: 7px;

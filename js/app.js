@@ -27,6 +27,14 @@ class Product {
 		});
 	}
 
+	deleteProduct(firebase, key, nameReference) {
+		let productRef = firebase.database().ref(nameReference).child('products/' + key);
+		let ui = new UI();
+		productRef.remove();
+		ui.deleteFromList(key);
+		ui.showMessage('El producto fue Eliminado con éxito', 'info');
+	}
+
 	searchProduct(firebase, valueSearch, nameReference) {
 		let ui = new UI();
 		ui.clearListProduct();
@@ -110,11 +118,13 @@ class Product {
 }
 
 class UI {
-	showListProduct( {name, price, description, file, key} ) {
+	showListProduct( products ) {
+		const {name, price, description, file, key} = products;
 		const productList = document.getElementById('product-list');
 		let productContainer = document.createElement('div');
 		// productContainer.style.marginTop = '10px';
 		productContainer.classList.add('product-item');
+		productContainer.setAttribute('id', key);
 
 		let product = `
 			<div class="fz-22">
@@ -126,7 +136,8 @@ class UI {
 				<img src="${file}" class="img-fluid">
 			</div>
 			<div class="text-center mt-2 mb-2">
-				<button id="button-edit" class="btn btn-danger d-none" onClick="editProduct('${key}')">Editar ${key}</button>
+				<button id="button-edit" class="btn btn-warning w-200 fz-20 d-none" onClick="editProduct('${escape(JSON.stringify(products))}')">Editar</button>
+				<button id="button-edit" class="btn btn-danger w-200 fz-20" onClick="deleteProduct('${key}')">Delete</button>
 			</div>`;
 		productContainer.innerHTML = product;
 		productList.appendChild(productContainer);
@@ -167,6 +178,10 @@ class UI {
 		let base64 = document.getElementById('base64');
 		formProduct.reset();
 		defaultBase64(base64);
+	}
+
+	deleteFromList(key) {
+		document.getElementById(key).remove();
 	}
 }
 
@@ -254,6 +269,20 @@ function init() {
 	defaultBase64(base64);
 }
 
-function editProduct(key) {
-	console.log(key);
+function editProduct(product) {
+	console.log(JSON.parse(unescape(product)));
+}
+
+function deleteProduct(key) {
+	let deleteModalButton = document.getElementById('delete-modal-button');
+
+	$('#delete-modal').modal('show');
+	deleteModalButton.setAttribute('product-key', key);
+
+	deleteModalButton.addEventListener('click', function(e) {
+		let key = this.getAttribute('product-key');
+		let product = new Product();
+		product.deleteProduct(firebase, key, nameReference);
+		$('#delete-modal').modal('hide');
+	});
 }
