@@ -30,7 +30,6 @@ class Product {
 
 	showAllProduct(firebase, nameReference) {
 		firebase.database().ref(nameReference).child('products').limitToLast(2).on('child_added', function(snap) {
-		// firebase.database().ref('tiendalima').child('products').on('child_added', function(snap) {
 			let product = snap.val();
 			product = {...product, key:snap.key};
 			let ui = new UI();
@@ -55,33 +54,6 @@ class Product {
 			product.showAllProduct(firebase, nameReference);
 			return;
 		}
-		// firebase.database()
-		// 		.ref('tiendalima')
-		// 		.child('products')
-		// 		.orderByChild('nameDescription')
-		// 		.startAt(valueSearch.toLowerCase())
-		// 		.on('value', function(snap) {
-		// 	let productValue = snap.val();
-		// 	console.table(productValue);
-		// 	let ui = new UI();
-		// 	ui.showListProduct(productValue);
-		// });
-
-		// firebase.database()
-		// 		.ref('tiendalima')
-		// 		.child('products')
-		// 		.orderByChild('nameDescription')
-		// 		.on('value', function(snap) {
-		// 	let productValue = snap.val();
-		// 	productValue = Object.entries(productValue);
-		// 	productValue = productValue.map(e => e[1]);
-		// 	productValue = productValue.filter(e => e.nameDescription.search(valueSearch.toLowerCase()) > -1);
-		// 	let ui = new UI();
-		// 	productValue.forEach(function(e) {
-		// 		ui.showListProduct(e);
-		// 		console.log(e);
-		// 	});
-		// }); .endAt("ab\uf8ff");
 
 		let refProducts = firebase.database().ref(nameReference).child('products/');
 		refProducts.orderByChild('nameDescription')
@@ -92,39 +64,6 @@ class Product {
 			let ui = new UI();
 			ui.showListProduct(snap.val());
 		});
-
-// firebase
-// .database()
-// .ref('tiendalima')
-// .child('products')
-// .orderByChild('nameDescription')
-// .startAt(valueSearch.toLowerCase())
-// .limitToLast(2)
-// .on('child_added', function(snap) {
-// 	// 
-// 	console.table(snap.val());
-// });
-
-
-// .then(snap => console.log(snap.val()));
-
-		// firebase.database()
-		// 		.ref('tiendalima')
-		// 		.child('products')
-		// 		.orderByChild('nameDescription')
-		// 		.on('child_added', function(snap) {
-		// 	let productValue = snap.val();
-		// 	console.log(productValue);
-			// productValue = Object.entries(productValue);
-			// productValue = productValue.map(e => e[1]);
-			// productValue = productValue.filter(e => e.nameDescription.search(valueSearch.toLowerCase()) > -1);
-			// let ui = new UI();
-			// productValue.forEach(function(e) {
-			// 	ui.showListProduct(e);
-			// 	console.log(e);
-			// });
-		// });
-
 	}
 }
 
@@ -133,7 +72,6 @@ class UI {
 		const {name, price, description, file, key} = products;
 		const productList = document.getElementById('product-list');
 		let productContainer = document.createElement('div');
-		// productContainer.style.marginTop = '10px';
 		productContainer.classList.add('product-item');
 		productContainer.setAttribute('id', key);
 
@@ -147,8 +85,8 @@ class UI {
 				<img src="${file}" class="img-fluid">
 			</div>
 			<div class="text-center mt-2 mb-2">
-				<button id="button-edit" class="btn btn-warning w-190 fz-20" onClick="editProduct('${escape(JSON.stringify(products))}', '${key}')">Editar</button>
-				<button id="button-edit" class="btn btn-danger w-190 fz-20" onClick="deleteProduct('${key}')">Delete</button>
+				<button id="button-edit" class="btn btn-warning w-150 fz-20" onClick="editProduct('${escape(JSON.stringify(products))}', '${key}')">Editar</button>
+				<button id="button-edit" class="btn btn-danger w-150 fz-20" onClick="deleteProduct('${key}')">Delete</button>
 			</div>`;
 		productContainer.innerHTML = product;
 		productList.appendChild(productContainer);
@@ -162,33 +100,41 @@ class UI {
 	converBase64(element) {
 		let file = element.files[0];
 		let reader = new FileReader();
-		let result = '';
+		let ui = this;
 		reader.onloadend = function() {
-			result = reader.result;
-			let base64 = document.getElementById('base64').value = reader.result;
+			document.getElementById('base64').value = reader.result;
+			ui.showPreview(reader.result);
 		}
 		reader.readAsDataURL(file);
+	}
+
+	showPreview(srcImage) {
+		let image = document.createElement('img');
+		let previewContainer = document.getElementById('preview-container');
+		image.setAttribute('src', srcImage);
+		image.classList.add('img-fluid');
+		previewContainer.innerHTML = image.outerHTML;
 	}
 
 	showMessage(message, cssClass) {
 		const messageContainer = document.getElementById('message-container');
 		const div = document.createElement('div');
-		// const container = document.querySelector('.container');
 		div.className = 'alert mt-3 alert-' + cssClass;
 		div.appendChild(document.createTextNode(message));
 		messageContainer.appendChild(div);
-		// container.insertBefore(div, app);
 
 		setTimeout(function() {
 			document.querySelector('.alert').remove();
-		}, 3000);
+		}, 5000);
 	}
 
 	clearForm() {
 		let formProduct = document.getElementById('form-product');
 		let base64 = document.getElementById('base64');
+		let previewContainer = document.getElementById('preview-container');
 		formProduct.reset();
 		defaultBase64(base64);
+		previewContainer.innerHTML = '';
 	}
 
 	deleteFromList(key) {
@@ -210,11 +156,8 @@ class UI {
 		let buttonSave = document.getElementById('button-save');
 		let buttonUpdate = document.getElementById('button-update');
 
-		// searchContainer.style.display = 'none';
-		// registerContainer.style.display = 'block';
 		searchContainer.classList.add('d-none');
 		registerContainer.classList.remove('d-none');
-
 
 		h2SaveProduct.classList.add('d-none');
 		h2UpdateProduct.classList.remove('d-none');
@@ -227,6 +170,8 @@ class UI {
 		inputDescription.value = description;
 		inputBase64.value = file;
 		inputKey.value = key;
+
+		this.showPreview(file);
 	}
 
 	showNewForm() {
@@ -239,9 +184,6 @@ class UI {
 
 		let buttonSave = document.getElementById('button-save');
 		let buttonUpdate = document.getElementById('button-update');
-
-		// searchContainer.style.display = 'none';
-		// registerContainer.style.display = 'block'
 
 		searchContainer.classList.add('d-none');
 		registerContainer.classList.remove('d-none');
@@ -263,7 +205,7 @@ const buttonRegister = document.getElementById('button-register');
 const buttonBacksearch = document.getElementById('button-backsearch');
 const buttonUpdate = document.getElementById('button-update');
 
-let debbugging = true;
+let debbugging = false;
 const nameReference = (debbugging) ? "tiendalima" : "tiendalimalive";
 
 init();
@@ -287,19 +229,15 @@ saveButton.addEventListener('click', function(e) {
 	product.saveProduct(firebase, product, nameReference);
 });
 
-searchText.addEventListener('keyup', function(e) {
-	// let product = new Product();
-	// product.searchProduct(firebase, this.value);
-});
-
 searchButton.addEventListener('click', function(e) {
 	let product = new Product();
 	product.searchProduct(firebase, searchText.value, nameReference);
 });
 
 file.addEventListener('change', function(e) {
+	let base64 = document.getElementById('base64');
 	let ui = new UI();
-	console.log(ui.converBase64(this));
+	ui.converBase64(this);
 });
 
 buttonRegister.addEventListener('click', function(e) {
@@ -347,13 +285,6 @@ function defaultBase64(element) {
 function init() {
 	let product = new Product();
 	let base64 = document.getElementById('base64');
-
-	// let registerContainer = document.getElementById('register-container');
-	// let seachContainer = document.getElementById('search-container');
-
-	// // registerContainer.classList.add('d-none');
-	// seachContainer.classList.add('d-none');
-
 	product.showAllProduct(firebase, nameReference);
 	defaultBase64(base64);
 }
