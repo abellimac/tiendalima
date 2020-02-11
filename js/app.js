@@ -147,8 +147,8 @@ class UI {
 				<img src="${file}" class="img-fluid">
 			</div>
 			<div class="text-center mt-2 mb-2">
-				<button id="button-edit" class="btn btn-warning w-200 fz-20" onClick="editProduct('${escape(JSON.stringify(products))}', '${key}')">Editar</button>
-				<button id="button-edit" class="btn btn-danger w-200 fz-20" onClick="deleteProduct('${key}')">Delete</button>
+				<button id="button-edit" class="btn btn-warning w-190 fz-20" onClick="editProduct('${escape(JSON.stringify(products))}', '${key}')">Editar</button>
+				<button id="button-edit" class="btn btn-danger w-190 fz-20" onClick="deleteProduct('${key}')">Delete</button>
 			</div>`;
 		productContainer.innerHTML = product;
 		productList.appendChild(productContainer);
@@ -210,8 +210,11 @@ class UI {
 		let buttonSave = document.getElementById('button-save');
 		let buttonUpdate = document.getElementById('button-update');
 
-		searchContainer.style.display = 'none';
-		registerContainer.style.display = 'block';
+		// searchContainer.style.display = 'none';
+		// registerContainer.style.display = 'block';
+		searchContainer.classList.add('d-none');
+		registerContainer.classList.remove('d-none');
+
 
 		h2SaveProduct.classList.add('d-none');
 		h2UpdateProduct.classList.remove('d-none');
@@ -237,8 +240,11 @@ class UI {
 		let buttonSave = document.getElementById('button-save');
 		let buttonUpdate = document.getElementById('button-update');
 
-		searchContainer.style.display = 'none';
-		registerContainer.style.display = 'block'
+		// searchContainer.style.display = 'none';
+		// registerContainer.style.display = 'block'
+
+		searchContainer.classList.add('d-none');
+		registerContainer.classList.remove('d-none');
 
 		h2SaveProduct.classList.remove('d-none');
 		h2UpdateProduct.classList.add('d-none');
@@ -308,10 +314,10 @@ buttonBacksearch.addEventListener('click', function(e) {
 	e.stopPropagation();
 	e.preventDefault();
 	let registerContainer = document.getElementById('register-container');
-	let seachContainer = document.getElementById('search-container');
+	let searchContainer = document.getElementById('search-container');
 
-	seachContainer.style.display = 'block';
-	registerContainer.style.display = 'none'
+	searchContainer.classList.remove('d-none');
+	registerContainer.classList.add('d-none');
 });
 
 buttonUpdate.addEventListener('click', function(e) {
@@ -342,10 +348,11 @@ function init() {
 	let product = new Product();
 	let base64 = document.getElementById('base64');
 
-	let registerContainer = document.getElementById('register-container');
-	let seachContainer = document.getElementById('search-container');
+	// let registerContainer = document.getElementById('register-container');
+	// let seachContainer = document.getElementById('search-container');
 
-	registerContainer.style.display = 'none';
+	// // registerContainer.classList.add('d-none');
+	// seachContainer.classList.add('d-none');
 
 	product.showAllProduct(firebase, nameReference);
 	defaultBase64(base64);
