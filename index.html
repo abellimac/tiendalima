@@ -52,11 +52,16 @@
 			<div id="product-list" class="mb-5"></div>
 		</div>
 		<div id="register-container">
-			<h2 class="text-center mt-2 mb-2">Registrar Producto</h2>
+			<h2 id="h2-save-product" class="text-center mt-2 mb-2">Registrar Producto</h2>
+			<h2 id="h2-update-product" class="text-center mt-2 mb-2 d-none">Actualizar Producto</h2>
 			<div>
 				<button id="button-backsearch" class="btn btn-primary btn-block mb-4 ht-50 fz-20">Buscar Producto</button>
 			</div>
 			<form id="form-product">
+				<div class="form-group d-none">
+					<label for="id" class="fz-16">Id:</label>
+					<input type="text" class="form-control fz-16" id="id" placeholder="Escriba el id del producto">
+				</div>
 				<div class="form-group">
 					<label for="name" class="fz-16">Nombre:</label>
 					<input type="text" class="form-control fz-16" id="name" placeholder="Escriba el nombre del producto">
@@ -80,6 +85,7 @@
 				</div>
 
 				<button id="button-save" type="submit" class="btn btn-success btn-block mb-4 ht-50 fz-20">Guardar</button>
+				<button id="button-update" type="submit" class="btn btn-success btn-block mb-4 ht-50 fz-20 d-none">Actualizar</button>
 			</form>
 		</div>
 	</div>

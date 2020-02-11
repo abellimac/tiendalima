@@ -17,6 +17,17 @@ class Product {
 		}
 	}
 
+	updateProduct(firebase, product, nameReference, id) {
+		let key = firebase.database().ref(nameReference).child(`products/${id}`).update(product);
+		if (key != undefined) {
+			let ui = new UI();
+			ui.showMessage('El producto fue Actualizado con éxito', 'success');
+			ui.clearForm();
+			ui.clearListProduct();
+			this.showAllProduct(firebase, nameReference);
+		}
+	}
+
 	showAllProduct(firebase, nameReference) {
 		firebase.database().ref(nameReference).child('products').limitToLast(2).on('child_added', function(snap) {
 		// firebase.database().ref('tiendalima').child('products').on('child_added', function(snap) {
@@ -136,7 +147,7 @@ class UI {
 				<img src="${file}" class="img-fluid">
 			</div>
 			<div class="text-center mt-2 mb-2">
-				<button id="button-edit" class="btn btn-warning w-200 fz-20 d-none" onClick="editProduct('${escape(JSON.stringify(products))}')">Editar</button>
+				<button id="button-edit" class="btn btn-warning w-200 fz-20" onClick="editProduct('${escape(JSON.stringify(products))}', '${key}')">Editar</button>
 				<button id="button-edit" class="btn btn-danger w-200 fz-20" onClick="deleteProduct('${key}')">Delete</button>
 			</div>`;
 		productContainer.innerHTML = product;
@@ -183,6 +194,58 @@ class UI {
 	deleteFromList(key) {
 		document.getElementById(key).remove();
 	}
+
+	showEditForm( {name, price, description, file}, key ) {
+		let searchContainer = document.getElementById('search-container');
+		let registerContainer = document.getElementById('register-container');
+		let inputName = document.getElementById('name');
+		let inputPrice = document.getElementById('price');
+		let inputDescription = document.getElementById('description');
+		let inputKey = document.getElementById('id');
+		let inputBase64 = document.getElementById('base64');
+
+		let h2SaveProduct = document.getElementById('h2-save-product');
+		let h2UpdateProduct = document.getElementById('h2-update-product');
+
+		let buttonSave = document.getElementById('button-save');
+		let buttonUpdate = document.getElementById('button-update');
+
+		searchContainer.style.display = 'none';
+		registerContainer.style.display = 'block';
+
+		h2SaveProduct.classList.add('d-none');
+		h2UpdateProduct.classList.remove('d-none');
+
+		buttonSave.classList.add('d-none');
+		buttonUpdate.classList.remove('d-none');
+
+		inputName.value = name;
+		inputPrice.value = price;
+		inputDescription.value = description;
+		inputBase64.value = file;
+		inputKey.value = key;
+	}
+
+	showNewForm() {
+		this.clearForm();
+		let registerContainer = document.getElementById('register-container');
+		let searchContainer = document.getElementById('search-container');
+
+		let h2SaveProduct = document.getElementById('h2-save-product');
+		let h2UpdateProduct = document.getElementById('h2-update-product');
+
+		let buttonSave = document.getElementById('button-save');
+		let buttonUpdate = document.getElementById('button-update');
+
+		searchContainer.style.display = 'none';
+		registerContainer.style.display = 'block'
+
+		h2SaveProduct.classList.remove('d-none');
+		h2UpdateProduct.classList.add('d-none');
+
+		buttonSave.classList.remove('d-none');
+		buttonUpdate.classList.add('d-none');
+	}
 }
 
 // Dom Events
@@ -192,8 +255,9 @@ const searchButton = document.getElementById('search-button');
 const file = document.getElementById('file');
 const buttonRegister = document.getElementById('button-register');
 const buttonBacksearch = document.getElementById('button-backsearch');
+const buttonUpdate = document.getElementById('button-update');
 
-let debbugging = false;
+let debbugging = true;
 const nameReference = (debbugging) ? "tiendalima" : "tiendalimalive";
 
 init();
@@ -235,11 +299,9 @@ file.addEventListener('change', function(e) {
 buttonRegister.addEventListener('click', function(e) {
 	e.preventDefault();
 	e.preventDefault();
-	let registerContainer = document.getElementById('register-container');
-	let seachContainer = document.getElementById('search-container');
 
-	seachContainer.style.display = 'none';
-	registerContainer.style.display = 'block'
+	let ui = new UI();
+	ui.showNewForm();
 });
 
 buttonBacksearch.addEventListener('click', function(e) {
@@ -250,6 +312,26 @@ buttonBacksearch.addEventListener('click', function(e) {
 
 	seachContainer.style.display = 'block';
 	registerContainer.style.display = 'none'
+});
+
+buttonUpdate.addEventListener('click', function(e) {
+	e.preventDefault();
+	e.stopPropagation();
+
+	let key = document.getElementById('id').value;
+	let name = document.getElementById('name').value;
+	let price = document.getElementById('price').value;
+	let description = document.getElementById('description').value;
+	let base64 = document.getElementById('base64').value;
+
+	if (name == '' || price == '') {
+		let ui = new UI();
+		ui.showMessage('El nombre y el precio deben ser ingresados', 'danger');
+		return;
+	}
+
+	let product = new Product(name, price, description, base64, name.toLowerCase(), new Date().getTime());
+	product.updateProduct(firebase, product, nameReference, key);
 });
 
 function defaultBase64(element) {
@@ -269,8 +351,10 @@ function init() {
 	defaultBase64(base64);
 }
 
-function editProduct(product) {
-	console.log(JSON.parse(unescape(product)));
+function editProduct(product, key) {
+	product = JSON.parse(unescape(product));
+	let ui = new UI();
+	ui.showEditForm(product, key);
 }
 
 function deleteProduct(key) {
